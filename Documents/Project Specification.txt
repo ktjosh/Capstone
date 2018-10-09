@@ -1,0 +1,50 @@
+what is your problem about and why is important?
+
+-> Image segmentation is a problem of dividing an image into a multiple sets of pixels. 
+-> why we do it? ==> dividing image into a meaningful representation enablig ease to analyze. 
+-> existing image segmentation algorithms:
+	- watershed segmentation
+	- Histogram based segmentation
+	- segmentation using K-means algorithms
+	- segmentation using edge detection.
+	
+-> image segmentation is used as a preprocesing steps in variety of applications. And in image processing, what kind of image is fed to the algorithm is more important than the algorithm itself. Hence this is an important step.
+
+-> application include object deteciton, fingerprint matching, face detection, medical imaging (find tumor cells, infected tissue etc.)
+
+why is your problem important? connect to a bigger picture and other problem?
+-> The algorithm mentioned may provide partial results, with images having thin, elongated shapes. e.g legs of insect or blood vesseles.
+-> we need better algorithms where we require a detailed segmentation of the image.
+-> The algorithm proposed uses multisink cuts with conectivity priors.
+-> It ensures conecivity constraints between pixels. It ensures that segment is done at a pixel level implying that we are not considering the overall color histogram, colors etc.
+-> the praposed algorithm uses dynamic programming to solve the problem in polynomial time.
+
+What work has been done?
+-> There exist many graph cut image segmentation approaches which makes use of Maxfloe-mincut, Finding shortest path, Markov random fields.
+-> some of the existing algorithm have a problem called shrinking bias, which means the algorithm have bias towards shorter contrast boundaries providing bad results in such cases
+-> The paper [1] uses an optimized version of dijkstra algorithm. The algorithm praposed is a merge of graph cut and Dijkstra algorithm. It is a heuristic approach which tries to find the global minimum.
+-> The paper also praposed another algorithm a slower one of the previous one which decomposes the problem into subprobems, finds lower bounds to the subproblem and then combine results.
+-> Most of the research is regarding segmentation using graph cut is towards doing it with minimum interaction.
+
+
+[1]: Graph cut based image segmentation with connectivity priors ,(Sara Vicente, Vladimir Kolmogorov,Carsten Rother)
+
+your attack plans?
+
+your expected results?
+
+An implementaion of the praposed algorithm which will be an interactive image segmentation algorithm. Where user will select the foreground object and background objects which they want to segment as an initial seed points. 
+Based on those seed points it will segment the image.
+
+
+
+=========================================================================
+
+dual graphs:
+Requirements --> Dual graphs
+Data structure requires storing vertices in cyclic manner. look at the image. 
+Traverse through the edges to find first cycle. The face inscribed in the cycle is one node of the dual graph.
+
+
+In the dual graph needs to find shortest cycle that separtes all the sinks from the source.
+In the end we will merge all the sinks into one single sink and treat it as a single source single sink problem. 
