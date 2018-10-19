@@ -37,14 +37,29 @@ class Graph:
         return self.vert_list[key]
 
 
-    def get_dual(self, vertlist):
+    def get_dual(self):
         """
         function finds dual graph of a given graph
         :param vertlist:
         :return:
         """
 
-        dual_vertices = self.find_faces(vertlist)
+        dual_vertices = self.find_faces(self.vert_list)
+        dual = simple_graph()
+        for vertices in dual_vertices:
+            dual.add_simple_node(vertices)
+
+        for vert1 in dual_vertices:
+            for vert2 in dual_vertices:
+                if vert1 != vert2:
+                    common = vert1 & vert2
+                    if (len(common)>1):
+                        # not decided what weight will be used but a weight will be used
+                        dual.add_simple_edge(vert1,vert2)
+                        dual.add_simple_edge(vert2,vert1)
+
+        return dual
+
 
     def find_faces(self, vertlist):
         faces_set = set()
@@ -74,13 +89,38 @@ class Graph:
 
 
 
-
-
-
     def get_node_id(self,coordinates):
         id = coordinates[0]*self.num_columns + coordinates[1]
         return id
 
+class simple_graph:
+    __slots__ = ['vert_list', 'num_vertices']
+
+    def __init__(self):
+        self.vert_list = {}
+        self.num_vertices = 0
+
+    def add_simple_node(self, id):
+        """
+        :param key:  here the key will be the i and j coordinate of the nodes
+        :return:
+        """
+        if id not in self.vert_list:
+            new_node = simple_node(id)
+            self.vert_list[id] = new_node
+            self.num_vertices += 1
+
+    def add_simple_edge(self, node1_id, node2_id, cost=1):
+        """
+        the definition might change based on the later requirements
+        :param node1:
+        :param node2:
+        :param cost:
+        :return:
+        """
+        node1 = self.vert_list[node1_id]
+        node2 = self.vert_list[node2_id]
+        node1.add_simple_nbr(node2, cost)
 
 
 class node:
@@ -116,6 +156,31 @@ class node:
         else:
             return self.list_of_nbrs[previous_id_index -1]
 
+
+    def __str__(self):
+        rt_str = ""
+        for keys in self.adj_list:
+            rt_str += str(keys.get_id()) + " " + str(self.adj_list[keys]) + "\n"
+
+        return rt_str
+
+
+class simple_node:
+    __slots__ = ['id', 'adj_list', 'list_of_nbrs']
+
+    def __init__(self,id):
+        self.id = id
+        self.adj_list = {}
+
+    def add_simple_nbr(self, nbr , weight = 1):
+
+        self.adj_list[nbr] = weight
+
+    def get_nbrs(self):
+        return self.adj_list.keys()
+
+    def get_id(self):
+        return  self.id
 
     def __str__(self):
         rt_str = ""
