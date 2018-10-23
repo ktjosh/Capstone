@@ -48,3 +48,19 @@ Traverse through the edges to find first cycle. The face inscribed in the cycle 
 
 In the dual graph needs to find shortest cycle that separtes all the sinks from the source.
 In the end we will merge all the sinks into one single sink and treat it as a single source single sink problem. 
+
+
+======================================================================================================================
+
+What to include in the report:
+1. background
+2. prelimimaries what are the concepts, terminologies that you are going to use.
+3. Explain the algorithm and what part ill be implementing.
+4. Implementation.
+5. Experiments
+6. conclusion
+
+Add definitions as  italics or something.
+
+Background:
+In the background section: start it as in the background section we wil talk about some of the previous work that performs image segmentation using connectivity prior.
