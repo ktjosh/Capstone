@@ -122,7 +122,10 @@ class simple_graph:
         node2 = self.vert_list[node2_id]
         node1.add_simple_nbr(node2, cost)
 
+    def get_simple_node(self, id):
+        return self.vert_list[id]
 
+    
 class node:
     __slots__ = ['i', 'j', 'id', 'adj_list', 'list_of_nbrs']
 
