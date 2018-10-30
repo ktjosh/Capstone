@@ -1,5 +1,6 @@
 from Node import *
 import  math
+from Priority_queue import *
 
 def create_graph():
     g= simple_graph()
@@ -30,7 +31,7 @@ def test_dijkstra():
     run_dijkstra(graph, 1)
 
 
-def update(source_node, dist, parent):
+def update(source_node, dist, parent, min_heap):
     # the source node will be an object of the class simple_node
     # print(type(source_node))
 
@@ -40,7 +41,9 @@ def update(source_node, dist, parent):
         # print(dist[nbrs.get_id()] > dist[source_node.get_id()] + source_node.adj_list[nbrs])
 
         if dist[nbrs.get_id()] > dist[source_node.get_id()] + source_node.adj_list[nbrs]:
+            # weight of the neighbor is updated and its priority will be updated in the queue
             dist[nbrs.get_id()] = dist[source_node.get_id()] + source_node.adj_list[nbrs]
+            min_heap.update_priority(nbrs.get_id())
             parent[nbrs.get_id()] = source_node.get_id()
 
     # return dist, parent
@@ -49,28 +52,37 @@ def run_dijkstra(graph, source_node):
     dist = {}
     parent = {}
     processed_vertices = set()
+    distanes_heap = PriorityQueue(dist)
 
     for vertices in graph.vert_list:
-        dist[vertices] = math.inf
+        dist[vertices] = 999999
         parent[vertices] = None
+        distanes_heap.insert(vertices)
+
     dist[source_node] = 0
+    distanes_heap.update_priority(source_node)
+
     start = graph.get_simple_node(source_node)
     # dist,parent = /
-    update(start, dist, parent)
+    update(start, dist, parent, distanes_heap)
+
 
     for vertices in graph.vert_list:
         if vertices!= source_node:
             min_dist = 999
             min_node = 0
-            print(vertices)
-            for it,val in dist.items():
-                if min_dist>val and it not in processed_vertices:
-                    min_dist = val
-                    min_node = it
+            # print(vertices)
+            # for it,val in dist.items():
+            #     if min_dist>val and it not in processed_vertices:
+            #         min_dist = val
+            #         min_node = it
+            min_node = distanes_heap.pop()
+            while min_node in processed_vertices:
+                min_node = distanes_heap.pop()
             print(min_dist, min_node)
             simple_min_node = graph.get_simple_node(min_node)
             # dist,parent = \
-            update(simple_min_node, dist, parent)
+            update(simple_min_node, dist, parent, distanes_heap)
             processed_vertices.add(min_node)
 
     print(dist)
