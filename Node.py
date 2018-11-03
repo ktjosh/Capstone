@@ -125,6 +125,14 @@ class simple_graph:
     def get_simple_node(self, id):
         return self.vert_list[id]
 
+    def contract_edges(self, vertices_set):
+        """
+
+        :param vertices_set: set of vertices that needs to be contracted 
+        :return:
+        """
+        pass
+
 
 class node:
     __slots__ = ['i', 'j', 'id', 'adj_list', 'list_of_nbrs']
