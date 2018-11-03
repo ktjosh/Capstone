@@ -128,7 +128,7 @@ class simple_graph:
     def contract_edges(self, vertices_set):
         """
 
-        :param vertices_set: set of vertices that needs to be contracted 
+        :param vertices_set: set of vertices that needs to be contracted
         :return:
         """
         pass
