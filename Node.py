@@ -32,10 +32,8 @@ class Graph:
         node2 = self.vert_list[node2_key]
         node1.add_nbr(node2, cost)
 
-
     def get_node(self, key):
         return self.vert_list[key]
-
 
     def get_dual(self):
         """
@@ -59,7 +57,6 @@ class Graph:
                         dual.add_simple_edge(vert2,vert1)
 
         return dual
-
 
     def find_faces(self, vertlist):
         faces_set = set()
@@ -85,9 +82,6 @@ class Graph:
                 faces_set.add(face)
 
         return faces_set
-
-
-
 
     def get_node_id(self,coordinates):
         id = coordinates[0]*self.num_columns + coordinates[1]
