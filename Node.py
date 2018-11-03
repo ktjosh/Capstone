@@ -191,3 +191,4 @@ class simple_node:
             rt_str += str(keys.get_id()) + " " + str(self.adj_list[keys]) + "\n"
 
         return rt_str
+
