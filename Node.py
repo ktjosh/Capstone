@@ -175,7 +175,6 @@ class simple_graph:
         removed_nodes = set()
 
         for edges in edge_set:
-            print(edges)
             contract_node1_id = edges[0]
             contract_node2_id = edges[1]
 
@@ -193,9 +192,10 @@ class simple_graph:
                               and (nbr.get_id(), contract_node1_id) not in removed_edges):
 
                         removed_edges.add((contract_node1_id,nbr.get_id()))
-                        print("removing edge",contract_node1_id,nbr.get_id())
+                        # print("removing edge",contract_node1_id,nbr.get_id())
                         x.add_simple_nbr(nbr, wts)
-                        nbr.add_simple_nbr(x, wts)
+                        if nbr.get_id() != x.get_id():
+                            nbr.add_simple_nbr(x, wts)
                         try:
                             nbr.remove_nbr(contract_node1)
                         except:
@@ -209,9 +209,10 @@ class simple_graph:
                              and (nbr.get_id(), contract_node2_id) not in removed_edges):
 
                         removed_edges.add((contract_node2_id, nbr.get_id()))
-                        print("removing edge", contract_node2_id, nbr.get_id())
+                        # print("removing edge", contract_node2_id, nbr.get_id())
                         x.add_simple_nbr(nbr, wts)
-                        nbr.add_simple_nbr(x, wts)
+                        if nbr.get_id() != x.get_id():
+                            nbr.add_simple_nbr(x, wts)
                         try:
                             nbr.remove_nbr(contract_node2)
                         except:
@@ -234,7 +235,10 @@ class simple_node:
         if nbr in self.adj_list:
             s = str(type(self.adj_list[nbr]))
             if s == '<class \'list\'>':
-                self.adj_list[nbr].append(weight)
+                if str(type(weight)) == '<class \'list\'>':
+                    self.adj_list[nbr].extend(weight)
+                else:
+                    self.adj_list[nbr].append(weight)
             else:
                 temp_wt = self.adj_list[nbr]
                 self.adj_list[nbr] = []
