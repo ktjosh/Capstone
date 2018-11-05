@@ -257,6 +257,8 @@ class simple_graph:
         parent = {}
         edge = {}
         min_cut_edges = set()
+        source_set_edges = set()
+
         while self.BFS(parent, edge, source, sink):
             # print("E:", edge)
             # print("P:", parent)
@@ -265,9 +267,17 @@ class simple_graph:
 
             current_node = sink
 
+            isSourceSink_node = False
+
             while current_node!= source:
                 parent_node = parent[current_node]
 
+                if parent_node == min_edge[0]:
+                    isSourceSink_node = True
+
+                if isSourceSink_node:
+                    source_set_edges.add(parent_node)
+                    
                 current_node.add_wt(parent_node, min_wt, edge[(parent_node, current_node)])
                 parent_node.subtract_wt(current_node, min_wt, edge[(parent_node, current_node)])
 
@@ -276,7 +286,7 @@ class simple_graph:
             parent = {}
             edge = {}
 
-        source_set_edges = self._BFS_Traversal(source)
+        # source_set_edges = self._BFS_Traversal(source)
         return min_cut_edges,source_set_edges
 
     def BFS(self, parent, edge, source, sink):
