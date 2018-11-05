@@ -84,7 +84,7 @@ class Graph:
         return faces_set
 
     def get_node_id(self, coordinates):
-        id = coordinates[0] * self.num_columns + coordinates[1]
+        id = coordinates[0]*self.num_columns + coordinates[1]
         return id
 
 
