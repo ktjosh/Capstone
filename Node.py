@@ -83,10 +83,6 @@ class Graph:
 
         return faces_set
 
-    def get_node_id(self,coordinates):
-        id = coordinates[0]*self.num_columns + coordinates[1]
-        return id
-
 
 class node:
     __slots__ = ['i', 'j', 'id', 'adj_list', 'list_of_nbrs']
