@@ -230,6 +230,19 @@ class simple_graph:
         for nodes in self.vert_list:
             self.vert_list[nodes].make_nbr_list()
 
+    def min_cut(self):
+        # first we will have the source and the sink vertices as the input
+        # we will find each augmented path from source to sink
+        # we will reverse the edges in the residual graph
+        # all the edges reachable node from source  to the non reachable nodes are min cut
+        # the BFS should return boolean if there exist a path
+        # backtrack the path from sink to source along with edge wt
+        # keep extra information of edge wt
+        pass
+
+    def BFS(self):
+        pass
+
 class simple_node:
     __slots__ = ['id', 'adj_list', 'list_of_nbrs']
 
