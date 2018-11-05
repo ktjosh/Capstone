@@ -1,3 +1,5 @@
+from queue import Queue
+
 class Graph:
     __slots__ = ['num_columns', 'vert_list', 'num_vertices', 'num_rows']
 
@@ -222,6 +224,9 @@ class simple_graph:
         for node_id in removed_nodes:
             self.remove_node(node_id)
 
+        # remove self loops
+        # del x.adj_list[x]
+
     def remove_node(self, id):
         del self.vert_list[id]
         self.num_vertices -= 1
@@ -230,7 +235,18 @@ class simple_graph:
         for nodes in self.vert_list:
             self.vert_list[nodes].make_nbr_list()
 
-    def min_cut(self):
+    def _find_min_edge(self, edges):
+        min_wt = float("Inf")
+        min_edge = ""
+        for edge, wts in edges.items():
+
+            if wts<min_wt:
+                min_wt = wts
+                min_edge = edge
+
+        return min_wt,min_edge
+
+    def min_cut(self, source, sink):
         # first we will have the source and the sink vertices as the input
         # we will find each augmented path from source to sink
         # we will reverse the edges in the residual graph
@@ -238,10 +254,68 @@ class simple_graph:
         # the BFS should return boolean if there exist a path
         # backtrack the path from sink to source along with edge wt
         # keep extra information of edge wt
-        pass
+        parent = {}
+        edge = {}
+        min_cut_edges = set()
+        while self.BFS(parent, edge, source, sink):
+            # print("E:", edge)
+            # print("P:", parent)
+            min_wt, min_edge = self._find_min_edge(edge)
+            min_cut_edges.add(min_edge)
 
-    def BFS(self):
-        pass
+            current_node = sink
+
+            while current_node!= source:
+                parent_node = parent[current_node]
+
+                current_node.add_wt(parent_node, min_wt, edge[(parent_node, current_node)])
+                parent_node.subtract_wt(current_node, min_wt, edge[(parent_node, current_node)])
+
+                current_node = parent_node
+
+            parent = {}
+            edge = {}
+
+
+        return min_cut_edges
+
+    def BFS(self, parent, edge, source, sink):
+        # edge must be put as a tuple with convention (parent, children)
+        # source and sink should be the objects of source and sink
+        # print("In BFS","source:", source,"Sink:", sink)
+        queue = Queue()
+        visited = set()
+
+        queue.put(source)
+        found_path = False
+        while not queue.empty():
+            current_node = queue.get()
+            visited.add(current_node)
+
+            for nbrs in current_node.adj_list.keys():
+                if nbrs not in visited:
+                    queue.put(nbrs)
+                    parent[nbrs] = current_node
+                    visited.add(nbrs)
+                    if nbrs == sink:
+                        found_path = True
+                        break
+
+            if found_path:
+                break
+
+        if found_path:
+            # track the path backwords and add edges
+            current_path_node = sink
+
+            while current_path_node!= source:
+                parent_node = parent[current_path_node]
+                edge_wt = parent_node._get_edge_wt( current_path_node)
+                edge[(parent_node,current_path_node)] = edge_wt
+                current_path_node = parent_node
+
+        return found_path
+
 
 class simple_node:
     __slots__ = ['id', 'adj_list', 'list_of_nbrs']
@@ -251,6 +325,12 @@ class simple_node:
         self.adj_list = {}
 
     def add_simple_nbr(self, nbr, weight=1):
+        """
+
+        :param nbr: object of class node
+        :param weight:
+        :return: None
+        """
         if nbr in self.adj_list:
             s = str(type(self.adj_list[nbr]))
             if s == '<class \'list\'>':
@@ -293,3 +373,34 @@ class simple_node:
                 temp = self.adj_list[nbr]
                 self.adj_list[nbr] = []
                 self.adj_list[nbr].append(temp)
+
+    def add_wt(self, parent_node, min_wt, edge_wt_considered):
+        # adding the new reverse edge of the edge wt towards the parent node
+        self.adj_list[parent_node].append(min_wt)
+
+    def subtract_wt(self, child_node, min_wt, edge_wt_considered):
+        """
+        if edge_list becomes empty remove the node
+        we will be dealing with float edge wts hence we may not find the exact edge wt
+        but most probably we will.
+
+        Add a threshold to edge wt, if the edge wt is below 0.000009 then remove that edge
+        :param child_node:
+        :param min_wt:
+        :param edge_wt_considered:
+        :return:
+        """
+        self.adj_list[child_node].remove(edge_wt_considered)
+        threshold = 0.0009
+        if min_wt == edge_wt_considered:
+            if len(self.adj_list[child_node]) == 0:
+                del self.adj_list[child_node]
+        else:
+            new_wt = edge_wt_considered - min_wt
+            if new_wt > threshold:
+                self.adj_list[child_node].append(new_wt)
+
+    def _get_edge_wt(self, child):
+        # largest_non_zero_edge
+        edge_wt = max(self.adj_list[child])
+        return edge_wt
