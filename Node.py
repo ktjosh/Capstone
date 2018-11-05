@@ -169,6 +169,7 @@ class simple_graph:
         """
         xnode_id = 'XNode'
         self.add_simple_node(xnode_id)
+        self.num_vertices += 1
 
         x = self.get_simple_node(xnode_id)
         removed_edges = set()
@@ -223,6 +224,7 @@ class simple_graph:
 
     def remove_node(self, id):
         del self.vert_list[id]
+        self.num_vertices -= 1
 
 class simple_node:
     __slots__ = ['id', 'adj_list', 'list_of_nbrs']
