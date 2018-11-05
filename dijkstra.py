@@ -27,6 +27,8 @@ def create_graph():
     for ed in edges:
         g.add_simple_edge(ed[0],ed[1],ed[2])
         g.add_simple_edge(ed[1], ed[0], ed[2])
+
+
     return g
 
 
@@ -54,8 +56,6 @@ def update(source_node, dist, parent, min_heap):
             dist[nbrs.get_id()] = dist[source_node.get_id()] + source_node.adj_list[nbrs]
             min_heap.update_priority(nbrs.get_id())
             parent[nbrs.get_id()] = source_node.get_id()
-
-    # return dist, parent
 
 def run_dijkstra(graph, source_node):
     """
@@ -87,19 +87,12 @@ def run_dijkstra(graph, source_node):
             min_node = distanes_heap.pop()
             while min_node in processed_vertices:
                 min_node = distanes_heap.pop()
-            print(min_dist, min_node)
             simple_min_node = graph.get_simple_node(min_node)
             # dist,parent = \
             update(simple_min_node, dist, parent, distanes_heap)
             processed_vertices.add(min_node)
 
-    # for i in range(len(graph.vert_list)):
-        # print(str(i+1)," ",dist[i+1]," ",parent[i+1])
-
     return dist, parent
-
-
-
 
 def main():
     test_dijkstra()
