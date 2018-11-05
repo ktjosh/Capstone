@@ -226,6 +226,10 @@ class simple_graph:
         del self.vert_list[id]
         self.num_vertices -= 1
 
+    def convert_to_list(self):
+        for nodes in self.vert_list:
+            self.vert_list[nodes].make_nbr_list()
+
 class simple_node:
     __slots__ = ['id', 'adj_list', 'list_of_nbrs']
 
@@ -269,3 +273,10 @@ class simple_node:
         :return:
         """
         del self.adj_list[nbr]
+
+    def make_nbr_list(self):
+        for nbr in self.adj_list:
+            if str(type(self.adj_list[nbr])) != '<class \'list\'>':
+                temp = self.adj_list[nbr]
+                self.adj_list[nbr] = []
+                self.adj_list[nbr].append(temp)
