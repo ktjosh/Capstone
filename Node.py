@@ -225,7 +225,7 @@ class simple_graph:
             self.remove_node(node_id)
 
         # remove self loops
-        # del x.adj_list[x]
+        del x.adj_list[x]
 
     def remove_node(self, id):
         del self.vert_list[id]
@@ -276,8 +276,8 @@ class simple_graph:
             parent = {}
             edge = {}
 
-
-        return min_cut_edges
+        source_set_edges = self._BFS_Traversal(source)
+        return min_cut_edges,source_set_edges
 
     def BFS(self, parent, edge, source, sink):
         # edge must be put as a tuple with convention (parent, children)
@@ -316,7 +316,21 @@ class simple_graph:
 
         return found_path
 
+    def _BFS_Traversal(self,source):
+        queue = Queue()
+        visited = set()
 
+        queue.put(source)
+        while not queue.empty():
+            current_node = queue.get()
+            visited.add(current_node)
+
+            for nbrs in current_node.adj_list.keys():
+                if nbrs not in visited:
+                    queue.put(nbrs)
+                    visited.add(nbrs)
+
+        return visited
 class simple_node:
     __slots__ = ['id', 'adj_list', 'list_of_nbrs']
 
