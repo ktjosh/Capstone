@@ -225,7 +225,8 @@ class simple_graph:
             self.remove_node(node_id)
 
         # remove self loops
-        del x.adj_list[x]
+        if x in x.adj_list:
+            del x.adj_list[x]
 
     def remove_node(self, id):
         del self.vert_list[id]
