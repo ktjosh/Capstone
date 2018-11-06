@@ -277,7 +277,6 @@ class simple_graph:
 
                 if isSourceSink_node:
                     source_set_edges.add(parent_node)
-                    
                 current_node.add_wt(parent_node, min_wt, edge[(parent_node, current_node)])
                 parent_node.subtract_wt(current_node, min_wt, edge[(parent_node, current_node)])
 
