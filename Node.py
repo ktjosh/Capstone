@@ -56,7 +56,7 @@ class Graph:
                     if (len(common) > 1):
                         # not decided what weight will be used but a weight will be used
                         dual.add_simple_edge(vert1, vert2)
-                        dual.add_simple_edge(vert2, vert1)
+                        # dual.add_simple_edge(vert2, vert1)
 
         return dual
 
