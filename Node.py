@@ -43,6 +43,11 @@ class Graph:
         :param vertlist:
         :return:
         """
+        def give_elements(num_set):
+            temp_array = []
+            for nums in num_set:
+                temp_array.append(nums)
+            return temp_array
 
         dual_vertices = self.find_faces(self.vert_list)
         dual = simple_graph()
@@ -55,7 +60,10 @@ class Graph:
                     common = vert1 & vert2
                     if (len(common) > 1):
                         # not decided what weight will be used but a weight will be used
-                        dual.add_simple_edge(vert1, vert2)
+                        common_nodes = give_elements(common)
+                        node1 = self.vert_list[common_nodes[0]]
+                        node2 = self.vert_list[common_nodes[2]]
+                        dual.add_simple_edge(vert1, vert2, node1.get_edge_wt(node2))
                         # dual.add_simple_edge(vert2, vert1)
 
         return dual
