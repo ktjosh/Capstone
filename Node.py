@@ -62,7 +62,7 @@ class Graph:
                         # not decided what weight will be used but a weight will be used
                         common_nodes = give_elements(common)
                         node1 = self.vert_list[common_nodes[0]]
-                        node2 = self.vert_list[common_nodes[2]]
+                        node2 = self.vert_list[common_nodes[1]]
                         dual.add_simple_edge(vert1, vert2, node1.get_edge_wt(node2))
                         # dual.add_simple_edge(vert2, vert1)
 
@@ -130,6 +130,9 @@ class node:
             return self.list_of_nbrs[len(self.list_of_nbrs) - 1]
         else:
             return self.list_of_nbrs[previous_id_index - 1]
+
+    def get_edge_wt(self, nbr):
+        return self.adj_list[nbr]
 
     def __str__(self):
         rt_str = ""
