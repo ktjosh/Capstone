@@ -1,3 +1,4 @@
+import math
 import cv2
 import numpy as np
 image_URL = "C:\\Users\\ktjos\\Desktop\\Lumpy.jpg"
@@ -43,6 +44,12 @@ def get_image():
     print(source_vert)
     print(sink_vert)
 
+def edge_wt_function1(luminance1, luminance2):
+    diff = abs(luminance1 - luminance2)
+    wt = 1 / math.pow(diff, 2)
+    return wt
+
 if __name__ == '__main__':
     # run_image_segmentation()
+    # get_image()
     get_image()
