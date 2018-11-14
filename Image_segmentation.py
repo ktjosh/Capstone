@@ -54,6 +54,12 @@ def edge_wt_function2(luminance1, luminance2):
     wt = math.pow((255 - diff), 8)
     return wt
 
+def edge_wt_function3(luminance1, luminance2):
+    diff = abs(luminance1 - luminance2)
+    wt = 1000/math.pow(math.e,diff)
+    return wt
+
+
 if __name__ == '__main__':
     # run_image_segmentation()
     # get_image()
