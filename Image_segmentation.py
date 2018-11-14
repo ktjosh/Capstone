@@ -1,3 +1,4 @@
+from Node import *
 import math
 import cv2
 import numpy as np
@@ -11,6 +12,27 @@ def run_image_segmentation(image):
     pass
 
 
+def create_graph(image, edge_wt_function):
+    graph = Graph(len(image), len(image[0]))
+
+    for i in range(len(image)):
+        for j in range(len(image[0])):
+            graph.add_node((i, j))
+
+    for i in range(len(image)):
+        for j in range(len(image[0])):
+            # try for all four neighbors in order: right, bottom, left, top
+            if j + 1 < len(image[0]):
+                graph.add_edge((i, j), (i, j + 1), edge_wt_function(image[i][j], image[i][j + 1]))
+            if i + 1 < len(image):
+                graph.add_edge((i, j), (i + 1, j), edge_wt_function(image[i][j], image[i + 1][j]))
+            if j - 1 >= 0:
+                graph.add_edge((i, j), (i, j - 1), edge_wt_function(image[i][j], image[i][j - 1]))
+            if i - 1 >= 0:
+                graph.add_edge((i, j), (i - 1, j), edge_wt_function(image[i][j], image[i - 1][j]))
+
+
+    return graph
 
 def pre_process_image():
     """
