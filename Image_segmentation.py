@@ -9,9 +9,8 @@ source_vert = []
 
 
 def run_image_segmentation(image):
-    pass
-
-
+    graph = create_graph(image, edge_wt_function1)
+    
 def create_graph(image, edge_wt_function):
     graph = Graph(len(image), len(image[0]))
 
@@ -79,21 +78,22 @@ def get_image(image_URL):
     return img
 
 def edge_wt_function1(luminance1, luminance2):
-    diff = abs(luminance1 - luminance2)
-    wt = 1 / math.pow(diff, 2)
+    diff = (abs(int(luminance1) - int(luminance2)))
+    wt = 1 / math.pow((diff+1), 2)
     return wt
 
 def edge_wt_function2(luminance1, luminance2):
-    diff = abs(luminance1 - luminance2)
+    diff = abs(int(luminance1) - int(luminance2))
     wt = math.pow((255 - diff), 8)
     return wt
 
 def edge_wt_function3(luminance1, luminance2):
-    diff = abs(luminance1 - luminance2)
+    diff = abs(int(luminance1) - int(luminance2))
     wt = 1000/math.pow(math.e,diff)
     return wt
 
 
 if __name__ == '__main__':
     # run_image_segmentation()
-    get_image()
+    # get_image()
+    pre_process_image()
