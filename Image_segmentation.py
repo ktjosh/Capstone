@@ -4,13 +4,24 @@ import numpy as np
 image_URL = "C:\\Users\\ktjos\\Desktop\\Lumpy.jpg"
 
 sink_vert = []
-
 source_vert = []
 
 
 def run_image_segmentation(image):
     pass
 
+
+
+def pre_process_image():
+    """
+    Later might want to add some preprocessing which will involve smoothening of the image
+    :return:
+    """
+    img = get_image(image_URL)
+
+    # convert to gray
+    img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    run_image_segmentation(img_gray)
 
 def get_clicked_points(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
@@ -19,8 +30,7 @@ def get_clicked_points(event, x, y, flags, param):
         else:
             sink_vert.append((x,y))
 
-
-def get_image():
+def get_image(image_URL):
     img = cv2.imread(image_URL)
     height_img = img.shape[0]
     width_img = img.shape[1]
@@ -44,6 +54,8 @@ def get_image():
     print(source_vert)
     print(sink_vert)
 
+    return img
+
 def edge_wt_function1(luminance1, luminance2):
     diff = abs(luminance1 - luminance2)
     wt = 1 / math.pow(diff, 2)
@@ -62,5 +74,4 @@ def edge_wt_function3(luminance1, luminance2):
 
 if __name__ == '__main__':
     # run_image_segmentation()
-    # get_image()
     get_image()
