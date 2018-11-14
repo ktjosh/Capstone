@@ -37,19 +37,30 @@ class Graph:
     def get_node(self, key):
         return self.vert_list[key]
 
-    def get_dual(self):
+    def get_dual(self, source, sink):
         """
         function finds dual graph of a given graph
         :param vertlist:
         :return:
         """
+        print(":: Creating Dual graph")
         def give_elements(num_set):
             temp_array = []
             for nums in num_set:
                 temp_array.append(nums)
             return temp_array
 
-        dual_vertices = self.find_faces(self.vert_list)
+        source_ids = []
+        for corrdinates in source:
+            id = self.get_node_id(corrdinates)
+            source_ids.append(id)
+
+        sink_ids = []
+        for corrdinates in sink:
+            id = self.get_node_id(corrdinates)
+            sink_ids.append(id)
+
+        dual_vertices, source_nodes_indual, sink_nodes_indual = self.find_faces(self.vert_list, source_ids, sink_ids)
         dual = simple_graph()
         for vertices in dual_vertices:
             dual.add_simple_node(vertices)
@@ -65,11 +76,19 @@ class Graph:
                         node2 = self.vert_list[common_nodes[1]]
                         dual.add_simple_edge(vert1, vert2, node1.get_edge_wt(node2))
                         # dual.add_simple_edge(vert2, vert1)
+        print("Dual Graph Created")
+        print(source_nodes_indual," ",source_ids)
+        print(sink_nodes_indual, " ", sink_ids)
+        return dual, source_nodes_indual, sink_nodes_indual
 
-        return dual
-
-    def find_faces(self, vertlist):
+    def find_faces(self, vertlist, souce_ids, sink_ids):
+        print(":: Finding faces")
         faces_set = set()
+        source_set = set(souce_ids)
+        sink_set = set(sink_ids)
+
+        source_nodes_indual =[]
+        sink_nodes_indual = []
 
         for nodes in vertlist.keys():
             (i, j) = vertlist[nodes].get_coordinates()
@@ -82,16 +101,32 @@ class Graph:
                 current_id = current_node.list_of_nbrs[0]
                 # = key_Set.dict_keys[0]
                 queue.append(current_id)  # insert first node in the adj list
+                flag_sorce = False
+                flag_sink = False
                 while (current_id != id):
                     successor = vertlist[current_id].get_clockwise_sucessor(previous_id)
                     previous_id = current_id
                     current_id = successor
                     queue.append(current_id)
+                    if current_id in source_set:
+                        flag_sorce = True
+                        source_set.remove(current_id)
+
+                    if current_id in sink_set:
+                        flag_sink = True
+                        sink_set.remove(current_id)
 
                 face = frozenset(queue)
+                if flag_sorce:
+                    source_nodes_indual.append(face)
+                if flag_sink:
+                    sink_nodes_indual.append(face)
+                flag_sorce = False
+                flag_sink = False
                 faces_set.add(face)
 
-        return faces_set
+        print("Found faces")
+        return faces_set, source_nodes_indual, sink_nodes_indual
 
     def get_node_id(self, coordinates):
         id = coordinates[0] * self.num_columns + coordinates[1]
