@@ -16,8 +16,11 @@ def run_image_segmentation(image):
     # sink_vert = [(42, 25), (47, 46), (52, 53), (68, 29), (80, 41), (73, 44)]
     # source_vert = [(5, 4)]
     # sink_vert =[(32, 11), (21, 37), (16, 59), (5, 64), (8, 73), (25, 93), (62, 92), (82, 86), (87, 60), (92, 37), (79, 39),
-     # (67, 26), (54, 17)]
-    graph = create_graph(image, edge_wt_function3)
+    #  (67, 26), (54, 17)]
+    # for plane 2
+    # source_vert = [(50, 21)]
+    # sink_vert = [(19, 48), (25, 47), (21, 44)]
+    graph = create_graph(image, edge_wt_function1)
     d, source_nodes, sink_nodes = graph.get_dual(source_vert, sink_vert)
     print(graph.vert_list[0])
 
@@ -79,7 +82,7 @@ def run_image_segmentation(image):
         a = source.adj_list[nodes]
         b =[]
         for it in a:
-            b.append(it*20)
+            b.append(it*1)
         source.adj_list[nodes] = b
     print("Source_v:", source)
     min_cut_edges, source_set_edges = d.min_cut(source, sink)
@@ -116,6 +119,7 @@ def run_image_segmentation(image):
     cv2.imshow('Source', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    cv2.imwrite('C:\\Users\\ktjos\\Desktop\\snap_segmentation.jpg', img)
     # for nodes in min_cut_edges:
 
 
