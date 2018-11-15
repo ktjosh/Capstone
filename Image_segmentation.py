@@ -3,7 +3,7 @@ from dijkstra import *
 import math
 import cv2
 import numpy as np
-image_URL = "C:\\Users\\ktjos\\Desktop\\snap.jpg"
+image_URL = "C:\\Users\\ktjos\\Desktop\\plane2.jpg"
 
 sink_vert = []
 source_vert = []
@@ -12,7 +12,12 @@ source_vert = []
 def run_image_segmentation(image):
     # source_vert = [(7, 19)]
     # sink_vert = [(24, 55), (35, 82), (73, 55)]
-    graph = create_graph(image, edge_wt_function1)
+    # source_vert = [(7, 18)]
+    # sink_vert = [(42, 25), (47, 46), (52, 53), (68, 29), (80, 41), (73, 44)]
+    # source_vert = [(5, 4)]
+    # sink_vert =[(32, 11), (21, 37), (16, 59), (5, 64), (8, 73), (25, 93), (62, 92), (82, 86), (87, 60), (92, 37), (79, 39),
+     # (67, 26), (54, 17)]
+    graph = create_graph(image, edge_wt_function3)
     d, source_nodes, sink_nodes = graph.get_dual(source_vert, sink_vert)
     print(graph.vert_list[0])
 
@@ -29,7 +34,9 @@ def run_image_segmentation(image):
     for sink_vertex in sink_nodes:
         current_vertex = sink_vertex
         prev = ""
-        while current_vertex!=start_node_id or current_vertex!=None:
+        # print(current_vertex, " ", start_node_id)
+        # print(current_vertex==start_node_id)
+        while current_vertex!=start_node_id and current_vertex!=None:
             prev = parent[current_vertex]
             edge_set.add((prev, current_vertex))
             current_vertex = prev
@@ -65,7 +72,18 @@ def run_image_segmentation(image):
     # print("-------------------------------------------------------")
 
     source = d.get_simple_node(source_nodes[0])
+    print("Source_v:",source)
+    print("Sink_V:", sink)
+    # min_cut_edges, source_set_edges = d.min_cut(source, sink)
+    for nodes in source.adj_list.keys():
+        a = source.adj_list[nodes]
+        b =[]
+        for it in a:
+            b.append(it*20)
+        source.adj_list[nodes] = b
+    print("Source_v:", source)
     min_cut_edges, source_set_edges = d.min_cut(source, sink)
+    print("Source_v:", source)
 
     print("number of mincut edges", len(min_cut_edges))
     # print(min_cut_edges)
@@ -135,11 +153,12 @@ def pre_process_image():
     source_vert = [(24, 55), (35, 82), (73, 55)]
     # convert to gray
     img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    print(type(img[0][0]))
-    print(type(img[0][0][0]))
-    print(img[0][0][0])
-    print("1:",img[0][0])
-    print("2:",img[0])
+    img = cv2.blur(img, (5, 5))
+    img_gray = [[0 for i in range(len(img[0]))] for i in range(len(img))]
+    for i in range(len(img)):
+        for j in range(len(img[0])):
+            luminence = (0.2125 * int(img[i][j][0])) + (0.7152 * int(img[i][j][1])) + (0.0722 * int(img[i][j][2]))
+            img_gray[i][j] = luminence
     run_image_segmentation(img_gray)
 
 def get_clicked_points(event, x, y, flags, param):
