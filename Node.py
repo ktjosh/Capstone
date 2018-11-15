@@ -132,6 +132,11 @@ class Graph:
         id = coordinates[0] * self.num_columns + coordinates[1]
         return id
 
+    def get_coordinates(self, id):
+        y = id % self.num_columns
+        x = id // self.num_columns
+        return x,y
+
 
 class node:
     __slots__ = ['i', 'j', 'id', 'adj_list', 'list_of_nbrs']
@@ -366,7 +371,7 @@ class simple_graph:
 
             while current_path_node!= source:
                 parent_node = parent[current_path_node]
-                edge_wt = parent_node._get_edge_wt( current_path_node)
+                edge_wt = parent_node._get_edge_wt(current_path_node)
                 edge[(parent_node,current_path_node)] = edge_wt
                 current_path_node = parent_node
 
@@ -446,7 +451,15 @@ class simple_node:
 
     def add_wt(self, parent_node, min_wt, edge_wt_considered):
         # adding the new reverse edge of the edge wt towards the parent node
-        self.adj_list[parent_node].append(min_wt)
+        try:
+            self.adj_list[parent_node].append(min_wt)
+        except:
+            self.adj_list[parent_node] = []
+            self.adj_list[parent_node].append(min_wt)
+            # print("ADD_WT_Function")
+            # print("edge_wt", edge_wt_considered)
+            # print("self", self.get_id(), "*", self)
+            # print("parent", parent_node.get_id(), "*", parent_node)
 
     def subtract_wt(self, child_node, min_wt, edge_wt_considered):
         """
@@ -460,8 +473,17 @@ class simple_node:
         :param edge_wt_considered:
         :return:
         """
-        self.adj_list[child_node].remove(edge_wt_considered)
-        threshold = 0.0009
+        try:
+            self.adj_list[child_node].remove(edge_wt_considered)
+        except:
+            print("exception")
+            # print("edge_wt", edge_wt_considered)
+            # print("self",self.get_id(),"*", self)
+            # print("child",child_node.get_id(),"*", child_node)
+        # if len(self.adj_list[child_node]) == 0:
+
+        threshold = 0.00000000009
+        # threshold = 0.0009
         if min_wt == edge_wt_considered:
             if len(self.adj_list[child_node]) == 0:
                 del self.adj_list[child_node]
@@ -469,8 +491,18 @@ class simple_node:
             new_wt = edge_wt_considered - min_wt
             if new_wt > threshold:
                 self.adj_list[child_node].append(new_wt)
+            else:
+                if len(self.adj_list[child_node]) == 0:
+                    del self.adj_list[child_node]
 
     def _get_edge_wt(self, child):
         # largest_non_zero_edge
+        try:
+            edge_wt = max(self.adj_list[child])
+        except ValueError:
+            print("ValueError")
+            # print(self.adj_list[child])
+            # print(child.get_id())
+            # edge_wt = 0
         edge_wt = max(self.adj_list[child])
         return edge_wt
