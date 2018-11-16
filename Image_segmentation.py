@@ -3,7 +3,7 @@ from dijkstra import *
 import math
 import cv2
 import numpy as np
-image_URL = "C:\\Users\\ktjos\\Desktop\\plane2.jpg"
+image_URL = "C:\\Users\\ktjos\\Desktop\\tiger.jpg"
 
 sink_vert = []
 source_vert = []
@@ -22,7 +22,7 @@ def run_image_segmentation(image):
     # sink_vert = [(19, 48), (25, 47), (21, 44)]
     graph = create_graph(image, edge_wt_function1)
     d, source_nodes, sink_nodes = graph.get_dual(source_vert, sink_vert)
-    print(graph.vert_list[0])
+    # print(graph.vert_list[0])
 
     print("::Running Dijkstra")
     idx = len(sink_nodes)//2
@@ -30,7 +30,7 @@ def run_image_segmentation(image):
     dist, parent = run_dijkstra(d, start_node_id)
 
     print("Dijkstra Complete")
-
+    dijkstra_edges =  set()
     edge_set = set()
     prev = ""
 
@@ -46,12 +46,14 @@ def run_image_segmentation(image):
 
     start_node_id = sink_nodes[idx]
     dist, parent = run_dijkstra(d, start_node_id)
+
     for sink_vertex in sink_nodes:
         current_vertex = sink_vertex
         prev = ""
         while current_vertex != start_node_id:
             prev = parent[current_vertex]
-            edge_set.add((prev, current_vertex))
+            if  ((prev, current_vertex)) not in edge_set and ((current_vertex, prev)) not in edge_set:
+                edge_set.add((prev, current_vertex))
             current_vertex = prev
     # for vertice in dist.keys():
     #     print(vertice, " ", dist[vertice], " ", parent[vertice])
@@ -75,8 +77,8 @@ def run_image_segmentation(image):
     # print("-------------------------------------------------------")
 
     source = d.get_simple_node(source_nodes[0])
-    print("Source_v:",source)
-    print("Sink_V:", sink)
+    # print("Source_v:",source)
+    # print("Sink_V:", sink)
     # min_cut_edges, source_set_edges = d.min_cut(source, sink)
     for nodes in source.adj_list.keys():
         a = source.adj_list[nodes]
@@ -105,7 +107,7 @@ def run_image_segmentation(image):
     green = [0,255,0]
     for edges in min_cut_edges:
         try:
-            print(edges[0].get_id()," ", edges[1].get_id())
+            # print(edges[0].get_id()," ", edges[1].get_id())
             intersection = edges[0].get_id() & edges[1].get_id()
         except:
             continue
@@ -120,10 +122,8 @@ def run_image_segmentation(image):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     cv2.imwrite('C:\\Users\\ktjos\\Desktop\\snap_segmentation.jpg', img)
+    display_dijkstra_edges(graph, d, edge_set)
     # for nodes in min_cut_edges:
-
-
-
 
 def create_graph(image, edge_wt_function):
     graph = Graph(len(image), len(image[0]))
@@ -157,20 +157,45 @@ def pre_process_image():
     source_vert = [(24, 55), (35, 82), (73, 55)]
     # convert to gray
     img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    img = cv2.blur(img, (5, 5))
+    img = cv2.blur(img, (3, 3))
+    cv2.namedWindow('blur', cv2.WINDOW_NORMAL)
+    cv2.imshow('blur', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
     img_gray = [[0 for i in range(len(img[0]))] for i in range(len(img))]
     for i in range(len(img)):
         for j in range(len(img[0])):
-            luminence = (0.2125 * int(img[i][j][0])) + (0.7152 * int(img[i][j][1])) + (0.0722 * int(img[i][j][2]))
+            luminence = (0.0722 * int(img[i][j][0])) + (0.7152 * int(img[i][j][1])) + (0.2125 * int(img[i][j][2]))
             img_gray[i][j] = luminence
     run_image_segmentation(img_gray)
+
+def display_dijkstra_edges(graph, dual, edgeset):
+    blue = [255,0,0]
+    img = cv2.imread(image_URL)
+    for edges in edgeset:
+        try:
+            # print(edges[0].get_id()," ", edges[1].get_id())
+            intersection = edges[0] & edges[1]
+        except:
+            continue
+        cord = []
+        for nodes in intersection:
+            x,y = graph.get_coordinates(nodes)
+            cord.append((x,y))
+            img[x,y] = blue
+    cv2.namedWindow('tree', cv2.WINDOW_NORMAL)
+    cv2.imshow('tree', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
 
 def get_clicked_points(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         if param == 'source':
-            source_vert.append((x,y))
+            source_vert.append((y,x))
         else:
-            sink_vert.append((x,y))
+            sink_vert.append((y,x))
 
 def get_image(image_URL):
     img = cv2.imread(image_URL)
