@@ -161,16 +161,16 @@ def pre_process_image():
     img_gray = [[0 for i in range(len(img[0]))] for i in range(len(img))]
     for i in range(len(img)):
         for j in range(len(img[0])):
-            luminence = (0.2125 * int(img[i][j][0])) + (0.7152 * int(img[i][j][1])) + (0.0722 * int(img[i][j][2]))
+            luminence = (0.0722 * int(img[i][j][0])) + (0.7152 * int(img[i][j][1])) + (0.2125 * int(img[i][j][2]))
             img_gray[i][j] = luminence
     run_image_segmentation(img_gray)
 
 def get_clicked_points(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
         if param == 'source':
-            source_vert.append((x,y))
+            source_vert.append((y,x))
         else:
-            sink_vert.append((x,y))
+            sink_vert.append((y,x))
 
 def get_image(image_URL):
     img = cv2.imread(image_URL)
