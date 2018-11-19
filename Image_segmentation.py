@@ -3,7 +3,7 @@ from dijkstra import *
 import math
 import cv2
 import numpy as np
-image_URL = "C:\\Users\\ktjos\\Desktop\\tiger.jpg"
+image_URL = "C:\\Users\\ktjos\\Desktop\\tiger .jpg"
 
 sink_vert = []
 source_vert = []
@@ -86,9 +86,16 @@ def run_image_segmentation(image):
         for it in a:
             b.append(it*1)
         source.adj_list[nodes] = b
-    print("Source_v:", source)
-    min_cut_edges, source_set_edges = d.min_cut(source, sink)
-    print("Source_v:", source)
+    # print("Source_v:", source)
+    min_cut_edges, source_set_edges, source_to_critical_edges = d.min_cut(source, sink)
+    print(len(source_to_critical_edges))
+    # print("Source_v:", source)
+    source_set_nodes = set()
+    print("****",len(source_set_edges))
+    # for edges_source_set_edges in source_set_edges:
+    #     print(edges_source_set_edges)
+    #     # for node_id in edges_source_set_edges:
+        #     source_set_nodes.add(node_id)
 
     print("number of mincut edges", len(min_cut_edges))
     # print(min_cut_edges)
@@ -102,7 +109,6 @@ def run_image_segmentation(image):
     #     print('------------------------------')
     #     print(nodes.get_id(), "edges:", nodes)
     img = cv2.imread(image_URL)
-
 
     green = [0,255,0]
     for edges in min_cut_edges:
@@ -123,7 +129,49 @@ def run_image_segmentation(image):
     cv2.destroyAllWindows()
     cv2.imwrite('C:\\Users\\ktjos\\Desktop\\snap_segmentation.jpg', img)
     display_dijkstra_edges(graph, d, edge_set)
+    display_edges(graph, d, source_to_critical_edges)
     # for nodes in min_cut_edges:
+    display_source_nodes(graph, d, source_set_edges)
+
+def display_source_nodes(graph, dual, node_set):
+    blue = [255, 0, 0]
+    img = cv2.imread(image_URL)
+    s = set()
+    for nodes in node_set:
+        dual_id = nodes.get_id()
+        if dual_id != 'XNode':
+            for coordinates in dual_id:
+                # s.add(coordinates)
+                x,y = graph.get_coordinates(coordinates)
+        # cord.append((x,y))
+                img[x,y] = blue
+    # for x in s: print(x)
+    cv2.namedWindow('bfs_traversal', cv2.WINDOW_NORMAL)
+    cv2.imshow('bfs_traversal', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+def display_edges(graph, dual, edgeset):
+    # displays edges present in the edgeset
+    # **Note here the edges in the edge set should be a tuple of size 2
+    # Each element of a tuple must be an object of the class simple node
+    blue = [255,0,0]
+    img = cv2.imread(image_URL)
+    for edges in edgeset:
+        try:
+            # print(edges[0].get_id()," ", edges[1].get_id())
+            intersection = edges[0].get_id() & edges[1].get_id()
+        except:
+            continue
+        cord = []
+        for nodes in intersection:
+            x,y = graph.get_coordinates(nodes)
+            cord.append((x,y))
+            img[x,y] = blue
+    cv2.namedWindow('tree', cv2.WINDOW_NORMAL)
+    cv2.imshow('tree', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 def create_graph(image, edge_wt_function):
     graph = Graph(len(image), len(image[0]))
@@ -188,7 +236,6 @@ def display_dijkstra_edges(graph, dual, edgeset):
     cv2.imshow('tree', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
 
 def get_clicked_points(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:

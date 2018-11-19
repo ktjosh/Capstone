@@ -310,6 +310,9 @@ class simple_graph:
         edge = {}
         min_cut_edges = set()
         source_set_edges = set()
+        source_to_critical_edge = set()
+        find_one = True
+        source_set_edges = self._BFS_Traversal(source, sink)
 
         while self.BFS(parent, edge, source, sink):
             # print("E:", edge)
@@ -317,8 +320,15 @@ class simple_graph:
             min_wt, min_edge = self._find_min_edge(edge)
             min_cut_edges.add(min_edge)
 
-            current_node = sink
+            current_node = min_edge[0]
+            if find_one:
+                while current_node != source:
+                    parent_node = parent[current_node]
+                    source_to_critical_edge.add((parent_node, current_node))
+                    current_node = parent_node
+            # find_one = False
 
+            current_node = sink
             isSourceSink_node = False
 
             while current_node!= source:
@@ -337,8 +347,7 @@ class simple_graph:
             parent = {}
             edge = {}
 
-        # source_set_edges = self._BFS_Traversal(source)
-        return min_cut_edges,source_set_edges
+        return min_cut_edges,source_set_edges, source_to_critical_edge
 
     def BFS(self, parent, edge, source, sink):
         # edge must be put as a tuple with convention (parent, children)
@@ -377,7 +386,7 @@ class simple_graph:
 
         return found_path
 
-    def _BFS_Traversal(self,source):
+    def _BFS_Traversal(self,source, sink):
         queue = Queue()
         visited = set()
 
@@ -385,13 +394,14 @@ class simple_graph:
         while not queue.empty():
             current_node = queue.get()
             visited.add(current_node)
-
-            for nbrs in current_node.adj_list.keys():
-                if nbrs not in visited:
-                    queue.put(nbrs)
-                    visited.add(nbrs)
+            if current_node!= sink:
+                for nbrs in current_node.adj_list.keys():
+                    if nbrs not in visited:
+                        queue.put(nbrs)
+                        visited.add(nbrs)
 
         return visited
+
 class simple_node:
     __slots__ = ['id', 'adj_list', 'list_of_nbrs']
 
