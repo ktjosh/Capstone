@@ -2,12 +2,14 @@ from Node import *
 from dijkstra import *
 import math
 import cv2
+import os
 import numpy as np
-image_URL = "C:\\Users\\ktjos\\Desktop\\tiger .jpg"
 
+hundred = "C:\\Users\\ktjos\\Desktop\\testing_images\\100"
+# image_URL = "C:\\Users\\ktjos\\Desktop\\testing_images\\200\\bird2_200.jpg"
+image_URL = "C:\\Users\\ktjos\\Desktop\\testing_images\\100\\ball.jpg"
 sink_vert = []
 source_vert = []
-
 
 def run_image_segmentation(image):
     # source_vert = [(7, 19)]
@@ -87,11 +89,11 @@ def run_image_segmentation(image):
             b.append(it*1)
         source.adj_list[nodes] = b
     # print("Source_v:", source)
-    min_cut_edges, source_set_edges, source_to_critical_edges = d.min_cut(source, sink)
+    min_cut_edges, source_set_nodes, source_to_critical_edges = d.min_cut(source, sink)
     print(len(source_to_critical_edges))
     # print("Source_v:", source)
-    source_set_nodes = set()
-    print("****",len(source_set_edges))
+    # source_set_nodes = set()
+    print("****",len(source_set_nodes))
     # for edges_source_set_edges in source_set_edges:
     #     print(edges_source_set_edges)
     #     # for node_id in edges_source_set_edges:
@@ -127,11 +129,16 @@ def run_image_segmentation(image):
     cv2.imshow('Source', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    cv2.imwrite('C:\\Users\\ktjos\\Desktop\\snap_segmentation.jpg', img)
+    cv2.imwrite(image_URL + "_segmentation.jpg", img)
     display_dijkstra_edges(graph, d, edge_set)
     display_edges(graph, d, source_to_critical_edges)
     # for nodes in min_cut_edges:
-    display_source_nodes(graph, d, source_set_edges)
+    display_source_nodes(graph, d, source_set_nodes)
+
+    display_sink_pixels(graph, d)
+
+    # visited_nodes = d._BFS_Traversal(source, sink)
+    # display_source_nodes(graph, d, visited_nodes)
 
 def display_source_nodes(graph, dual, node_set):
     blue = [255, 0, 0]
@@ -150,6 +157,7 @@ def display_source_nodes(graph, dual, node_set):
     cv2.imshow('bfs_traversal', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    cv2.imwrite(image_URL + "_segmented.jpg", img)
 
 def display_edges(graph, dual, edgeset):
     # displays edges present in the edgeset
@@ -168,6 +176,10 @@ def display_edges(graph, dual, edgeset):
             x,y = graph.get_coordinates(nodes)
             cord.append((x,y))
             img[x,y] = blue
+
+        for coordinates in source_vert:
+            img[coordinates[0], coordinates[1]] = [0,0,255]
+
     cv2.namedWindow('tree', cv2.WINDOW_NORMAL)
     cv2.imshow('tree', img)
     cv2.waitKey(0)
@@ -205,7 +217,7 @@ def pre_process_image():
     source_vert = [(24, 55), (35, 82), (73, 55)]
     # convert to gray
     img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    img = cv2.blur(img, (3, 3))
+    # img = cv2.blur(img, (3, 3))
     cv2.namedWindow('blur', cv2.WINDOW_NORMAL)
     cv2.imshow('blur', img)
     cv2.waitKey(0)
@@ -236,6 +248,21 @@ def display_dijkstra_edges(graph, dual, edgeset):
     cv2.imshow('tree', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    cv2.imwrite(image_URL + "_dijkstraEdges.jpg", img)
+
+def display_sink_pixels(graph, d):
+    red = [0,0,255]
+    img = cv2.imread(image_URL)
+    for coordinates in sink_vert:
+        img[coordinates[0], coordinates[1]] = red
+    for coordinates in source_vert:
+        img[coordinates[0], coordinates[1]] = red
+
+    cv2.namedWindow('Points', cv2.WINDOW_NORMAL)
+    cv2.imshow('Points', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    cv2.imwrite(image_URL + "_Display_Points.jpg", img)
 
 def get_clicked_points(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONUP:
@@ -272,7 +299,7 @@ def get_image(image_URL):
 
 def edge_wt_function1(luminance1, luminance2):
     diff = (abs(int(luminance1) - int(luminance2)))
-    wt = 1 / math.pow((diff+1), 2)
+    wt = 1 / math.pow((diff+1), 8)
     return wt
 
 def edge_wt_function2(luminance1, luminance2):
@@ -282,11 +309,24 @@ def edge_wt_function2(luminance1, luminance2):
 
 def edge_wt_function3(luminance1, luminance2):
     diff = abs(int(luminance1) - int(luminance2))
-    wt = 1000/math.pow(math.e,diff)
+    wt = 1000/math.pow(math.e,diff + 1)
     return wt
 
+def main():
+    print(os.listdir(hundred))
+
+    for images in os.listdir(hundred):
+        path = os.path.join(hundred,images)
+        global image_URL
+        global sink_vert
+        global source_vert
+        sink_vert = []
+        source_vert = []
+        image_URL = path
+        pre_process_image()
 
 if __name__ == '__main__':
     # run_image_segmentation()
     # get_image()
+    # main()
     pre_process_image()

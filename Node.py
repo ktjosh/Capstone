@@ -400,6 +400,10 @@ class simple_graph:
                         queue.put(nbrs)
                         visited.add(nbrs)
 
+        for nbrs in sink.adj_list.keys():
+            if nbrs in visited:
+                visited.remove(nbrs)
+
         return visited
 
 class simple_node:
